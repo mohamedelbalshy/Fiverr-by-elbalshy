@@ -1,0 +1,59 @@
+<div class="hero">
+	<div class="container">
+		<div class="row">
+			<div class="hero-heading">
+				Service for lean entrepreneur <br/>
+				Find it on Threely.
+				<p>Browse. Buy. Done. </p>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-offset-3 col-md-6">
+				<form method="post" action="/search">
+					<div class="input-group input-group-lg">
+						<input type="text" class="form-control" name="search_input" placeholder="What are you searching?...">
+						<span class="input-group-btn">
+							<input type="submit" value="Find Gigs" class="btn btn-success">
+						</span>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="container section">
+	<h1>
+		Newest Gigs
+	</h1>
+	
+		{{#each gigs}}
+		<div class="col-md-3">
+			<div class="gig-card">
+				<a href="/service_detail/{{_id}}"><img src="/img/lyrics.jpg" ></a>
+				
+				 {{#if_equals owner._id ../user._id}}
+					<a href="/profile">
+						<img class="img-circle" style="width: 32px; height: 32px; margin-top: -7px;" src="{{ owner.photo }}">
+						<h3>{{ owner.name }}</h3>
+					</a>
+				 {{else}}
+					<a href="/profile/{{owner._id}}">
+						<img class="img-circle" style="width: 32px; height: 32px; margin-top: -7px;" src="{{ owner.photo }}">
+						<h3>{{ owner.name }}</h3>
+					</a>
+					
+				 {{/if_equals}}
+				<h4>
+					{{title}}
+				</h4>
+				<h3>
+					${{price}}
+				</h3>
+			</div>
+		</div>
+		{{/each}}
+
+	</div>
+</div>
+
+

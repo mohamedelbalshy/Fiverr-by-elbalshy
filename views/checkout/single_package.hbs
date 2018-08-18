@@ -1,0 +1,64 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="overview">
+                <div class="single-order-package-card">
+                    <div class="margin-both">
+                        <h2 class="text-center">Summary</h2>
+                        <hr/>
+                        <div class="inner">
+                            <img src="{{gig.picture}}" class="img-circle">
+                            <br/>
+                            <p class="text-center">{{gig.title}}</p>
+                        </div>
+                        <hr/>
+                        <div class="input-group promocode">
+                            <input type="text" class="form-control" placeholder="Enter Promocode" id="code">
+                            <span class="input-group-btn">
+                                <button class="btn btn-success btn-block" id="promocodeButton">Apply</button>
+                            </span>
+                            <p class="text-center" id="promocodeResponse"></p>
+                        </div>
+
+                        <hr/>
+                        <div class="space-between">
+                            <h4>
+                                <span>Subtotal: </span>
+                                <span class="fee dollar">${{gig.price}}</span>
+                            </h4>
+                        </div>
+
+                        <hr/>
+                        <div class="space-between">
+                            <h4>
+                                <span>Fee: </span>
+                                <span class="fee dollar">$3.15</span>
+                            </h4>
+                        </div>
+
+                        <hr/>
+                        <div class="space-between">
+                            <h4>
+                                <span>Total: </span>
+                                <span class="fee dollar">$<span id="totalPrice">{{totalPrice}}</span></span>
+                            </h4>
+                        </div>
+                        <hr/>
+                        <div class="space-between">
+                            <h4>
+                                <span>Subtract: </span>
+                                <span class="fee dollar">$ - 
+                                    <span id="subtract">0</span>
+                                </span>
+                            </h4>
+                        </div>
+                        
+
+                        <a href="/payment" class="btn btn-success btn-lg proceed-btn">Proceed payment</a>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,43 @@
+{
+  "name": "marketplace",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "engines": {
+    "node": "9.4.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "npm start": "node server.js",
+    "start": "node server.js"
+  },
+  "author": "Mohamed Elbalshy",
+  "license": "ISC",
+  "dependencies": {
+    "algoliasearch": "^3.29.0",
+    "async": "^*",
+    "bcrypt-nodejs": "*",
+    "body-parser": "*",
+    "connect-mongo": "^2.0.1",
+    "cookie-parser": "*",
+    "express": "*",
+    "express-flash": "*",
+    "express-handlebars": "*",
+    "express-session": "*",
+    "hbs": "*",
+    "jsonwebtoken": "^8.3.0",
+    "lodash": "^4.17.10",
+    "mongoose": "^5.2.3",
+    "mongoose-algolia": "^1.7.1",
+    "mongoose-deep-populate": "^3.1.1",
+    "morgan": "*",
+    "nodemailer": "^4.6.8",
+    "passport": "^0.4.0",
+    "passport-facebook": "^2.1.1",
+    "passport-local": "*",
+    "passport.socketio": "*",
+    "paypal-rest-sdk": "^1.8.1",
+    "socket.io": "^2.1.1",
+    "stripe": "^6.2.1"
+  }
+}

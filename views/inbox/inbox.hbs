@@ -1,0 +1,36 @@
+<div class="container">
+    <h1 class="text-center">Inbox</h1>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="overview">
+                <div class="list-orders-card">
+                    <div class="table-margin">
+            
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Photo</th>
+                                    <th>Name: </th>
+                                    <th>Message</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each message}}
+                                <tr>
+                                    <td>
+                                        <img src="{{owner.photo}}" class="order-image-my-gig">
+                                    </td>
+                                    <td>{{owner.name}}</td>
+                                    <td><a href="/inbox/{{_id}}">{{content}}</a></td>
+                                </tr>
+            
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

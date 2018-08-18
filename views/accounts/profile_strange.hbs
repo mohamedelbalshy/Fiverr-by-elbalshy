@@ -1,0 +1,41 @@
+<div class="container">
+    <h1 class="text-center">{{userStrange.name}}</h1>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="overview">
+                <div class="profile-card">
+                    <img class="img-circle" src=" {{userStrange.photo}} " />
+                    <div class="col-md-offset-3">
+                        
+                        <h3 class="text-center">{{userStrange.email}}</h3>
+                        <a href="/inbox/{{userStrange._id}}" class="btn btn-success" style="margin-right:40px">Contact Me</a>
+                        <a href="#" class="btn btn-success ">Custome Offer</a>
+                    </div>
+                    <h1>{{userStrange.about}}</h1>    
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <hr/>
+    <div class="section container">
+         {{#each userStrange.gigs}}
+        <div class="col-md-3">
+            <div class="gig-card">
+                <a href="/service_detail/{{_id}}">
+                    <img src="/img/lyrics.jpg">
+                </a>
+                <a href="/profile/{{owner._id}}">
+                    <h3>{{ userStrange.name }}</h3>
+                </a>
+                <h4>
+                    {{title}}
+                </h4>
+                <h3>
+                    ${{price}}
+                </h3>
+            </div>
+        </div>
+        {{/each}}
+        </div>
+</div>
