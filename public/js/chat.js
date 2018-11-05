@@ -1,6 +1,9 @@
 $(function(){
     var socket = io();
 
+   
+    
+
     $('#sendMessage').submit(function(){
         var input = $('#message').val();
         if(input === ''){

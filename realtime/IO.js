@@ -7,6 +7,8 @@ module.exports = function(io) {
 
   io.on('connection', function(socket) {
     
+    
+
     const user = socket.request.user;
     
     const orderId = socket.request.session.orderId;

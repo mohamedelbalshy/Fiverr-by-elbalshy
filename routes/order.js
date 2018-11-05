@@ -162,7 +162,7 @@ router.get('/users/:userId/orders/:orderId', (req, res, next) => {
             res.render('order/order-room', {
                 layout: 'chat-layout', order: order, helpers: {
                     if_equals: function (a, b, opts) {
-                        if (a.equals(b)) {
+                        if (a === b) {
                             return opts.fn(this);
                         } else {
                             return opts.inverse(this)
@@ -179,7 +179,16 @@ router.get('/users/:id/manage_orders', (req, res, next) => {
         .populate('seller')
         .populate('gig')
         .exec(function (err, orders) {
-            res.render('order/order-seller', { orders: orders });
+            res.render('order/order-seller', {
+                orders: orders, helpers: {
+                    if_equals: function (a, b, opts) {
+                        if (a === b) {
+                            return opts.fn(this);
+                        } else {
+                            return opts.inverse(this)
+                        }
+                    }
+                } });
         });
 });
 
@@ -189,7 +198,17 @@ router.get('/users/:id/orders', (req, res, next) => {
         .populate('seller')
         .populate('gig')
         .exec(function (err, orders) {
-            res.render('order/order-buyer', { orders: orders });
+            
+            res.render('order/order-buyer', {
+                orders: orders, helpers: {
+                    if_equals: function (a, b, opts) {
+                        if (a === b) {
+                            return opts.fn(this);
+                        } else {
+                            return opts.inverse(this)
+                        }
+                    }
+                } });
         });
 });
 

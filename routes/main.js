@@ -6,6 +6,7 @@ var Gig = require('../models/gig');
 var User = require('../models/user');
 var Promocode = require('../models/promocode');
 var Message = require('../models/message');
+var PrivateMessage = require('../models/privatemessage');
 
 /* const algoliasearch = require('algoliasearch');
 var client = algoliasearch('62869YW5OH', '88ea6d5aa374f20956f859d0cbf6d586');
@@ -23,7 +24,7 @@ router.get('/', (req, res, next) => {
         res.render('main/home', {
             gigs: gigs, loggedUser: req.user, helpers: {
                 if_equals: function (a, b, opts) {
-                    if (a.equals(b)) {
+                    if (a === b) {
                         return opts.fn(this);
                     } else {
                         return opts.inverse(this)
@@ -107,7 +108,16 @@ router.route('/search')
 
 router.get('/my-gigs', (req, res, next) => {
     Gig.find({ owner:req.user._id}).then((gigs) => {
-        res.render('main/my-gigs', { gigs: gigs });
+        res.render('main/my-gigs', {
+            gigs: gigs, helpers: {
+                if_equals: function (a, b, opts) {
+                    if (a === b) {
+                        return opts.fn(this);
+                    } else {
+                        return opts.inverse(this)
+                    }
+                }
+            } });
     })
 });
 
@@ -228,25 +238,116 @@ router.get('/inbox', (req, res, next)=>{
         })
 });
 
-router.route('/inbox/:userId')
+router.route('/inbox/:twoIds')
     .get((req, res, next)=>{
-        req.session.userId = req.params.userId;
-        User.findOne({_id:req.params.userId})
-            .populate('messages')
-            .populate('gigs')
-            .exec(function(err, user){
-                res.render('inbox/inbox-room', {
-                    layout: 'inbox-layout', inboxUser: user, helpers: {
-                        if_equals: function (a, b, opts) {
-                            if (a.equals(b)) {
-                                return opts.fn(this);
-                            } else {
-                                return opts.inverse(this)
-                            }
+        req.session.twoIds = req.params.twoIds;
+        var inboxUserId = req.params.twoIds.split(".")[0];
+        async.parallel([
+            function(callback){
+                User.findOne({ _id: inboxUserId })
+                    .populate('messages')
+                    .populate('gigs')
+                    .exec(function (err, result) {
+                        callback(null, result)
+                    })
+            },
+            function(callback){
+                PrivateMessage.aggregate([
+                    { $match: {$or: [{'sender': req.user._id},
+                    {'receiver': req.user._id}]}},
+                    {$sort: {"createdAt": -1}},
+                    {
+                        $group:{
+                            "_id":{
+                                "last_message_between": {
+                                    $cond:[
+                                        {
+                                            $gt:[
+                                                { $substr: ["$senderName", 0, 1]},
+                                                { $substr: ["$receiverName", 0, 1] }
+                                            ]
+                                        },
+                                        
+                                             {$concat: ["$senderName"," and ", "$receiverName"]},
+                                             {$concat: ["$receiverName", " and ", "$senderName"]}
+                                            
+                                        
+                                    ]
+                                }
+                            }, "body":{$first: "$$ROOT"}
+                        }
+                    }], function(err, newResult){
+                        console.log("New Results",newResult)
+                        callback(null, newResult);
+                    }
+                )
+            }
+        ], (err, results) => {
+            const inboxUser = results[0];
+            
+            const last_message_between = results[1];
+            console.log(last_message_between.length)
+            var num_of_unread_messages =0;
+            for(var i=0; i<last_message_between.length; i++){
+                if(last_message_between[i].body.isRead === false){
+                    
+                    num_of_unread_messages++;
+                }
+            }
+            res.render('inbox/inbox-room', {
+                layout: 'inbox-layout', inboxUser: inboxUser, chat: last_message_between, num_of_unread_messages: num_of_unread_messages,  helpers: {
+                    if_equals: function (a, b, opts) {
+                        if (a === b) {
+                            return opts.fn(this);
+                        } else {
+                            return opts.inverse(this)
                         }
                     }
-                })
-            })
+                }
+            });
+        })
+        
+        
+
+
+    })
+    .post((req, res, next)=> {
+        const params = req.params.twoIds.split('.');
+        const idParams = params[0];
+        async.waterfall([
+            function(callback){
+                if(req.body.message){
+                    User.findById({_id:idParams}, function(err, receiver){
+                        
+                        callback(err, receiver);
+                    })
+                }
+            },
+            function (receiver, callback){
+                if(req.body.message){
+                    const newPrivateMessage = new PrivateMessage();
+
+                    newPrivateMessage.sender = req.user._id;
+                    newPrivateMessage.receiver = receiver._id;
+                    newPrivateMessage.senderName = req.user.name;
+                    newPrivateMessage.receiverName = receiver.name;
+                    newPrivateMessage.content = req.body.message;
+                    newPrivateMessage.userImage = req.user.photo;
+                    newPrivateMessage.createdAt = new Date();
+
+                    newPrivateMessage.save((err, result)=> {
+                        if(err){
+                            return next();
+                        } else{
+                            console.log(result);
+                            callback(err, result)
+                        }
+                    })
+                }
+            }
+        ], (err, results)=>{
+            res.redirect('/inbox/'+ req.params.twoIds);
+        } );
     })
 
 

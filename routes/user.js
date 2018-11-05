@@ -134,7 +134,16 @@ router.route('/login')
 /* PROFILE ROUTE */
 router.route('/profile')
   .get(passportConfig.isAuthenticated, (req, res, next) => {
-    res.render('accounts/profile', {message: req.flash('success')});
+    res.render('accounts/profile', {
+      message: req.flash('success'), helpers: {
+        if_equals: function (a, b, opts) {
+          if (a === b) {
+            return opts.fn(this);
+          } else {
+            return opts.inverse(this)
+          }
+        }
+      }});
   })
   .post((req, res, next)=>{
     User.findOne({_id: req.user._id}, function(err, user){
@@ -158,13 +167,22 @@ router.get('/profile/:id', (req, res, next)=>{
   .exec(function(err, user){
       
       
-      res.render('accounts/profile_strange', {userStrange:user})
+    res.render('accounts/profile_strange', {
+      userStrange: user, helpers: {
+        if_equals: function (a, b, opts) {
+          if (a === b) {
+            return opts.fn(this);
+          } else {
+            return opts.inverse(this)
+          }
+        }
+      }} );
     
   })
 });
 
 var JWTverify = ((req, res, next)=>{
-  jwt.verify(req.query.token, config.secret, (err, authData) => {
+  jwt.verify(req.query.token, config.secret || process.env.SECRET, (err, authData) => {
     if (err) return next();
 
     User.findOneAndUpdate({ email: authData.userToken.email }, { $set: { active: true } }, { new: true }, function (err, user) {
@@ -188,7 +206,7 @@ var JWTverify = ((req, res, next)=>{
 
 var generateJWT = (req, res, user)=>{
   var userToken = _.pick(user, ['id', 'email']);
-  jwt.sign({ userToken }, config.secret, (err, token) => {
+  jwt.sign({ userToken }, config.secret || process.env.SECRET, (err, token) => {
     user.token = token;
     var smtpTransport = nodemailer.createTransport({
       service: "Gmail",
@@ -196,7 +214,7 @@ var generateJWT = (req, res, user)=>{
 
       auth: {
         user: "mohamedbalshy2014@gmail.com",
-        pass: config.gmailPass
+        pass: config.gmailPass || process.env.GMAILPASS
       }
 
     });

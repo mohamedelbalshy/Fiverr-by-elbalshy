@@ -22,6 +22,8 @@
         </svg>
       </div>
 
+      
+
       <ul class="nav navbar-nav navbar-right">
         {{#if user}}
 
@@ -41,6 +43,67 @@
           </a>
           <ul class="dropdown-menu">
             <li><a href="/users/{{ user._id }}/orders">Orders</a></li>
+          </ul>
+        </li>
+
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+            <span class="fa fa-globe "></span> <b class="caret"></b>
+            {{#if_equals num_of_unread_messages 0}}
+            <span class="label label-primary nav-label-icon" id=""></span>
+            {{else}}
+            <span class="label label-primary nav-label-icon" id="">{{num_of_unread_messages}}</span>
+            {{/if_equals}}
+
+          </a>
+          <ul class="dropdown-menu">
+            <li>
+              <div class="navbar-login">
+                <div class="col-md-12">
+                  <div class="row">
+                    <div class="dropdown-tag">
+                      <h3 class="text-center dropdown-tag-head">
+                        Notifications
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  {{#if_equals chat.length 0}}
+                  {{else}}
+                  {{#each chat}}
+                  <a href="/inbox/{{body.receiver}}.{{ ../user._id}}">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <p class="text-center">
+                          <img src="https://placehold.it/300x300" class="img-circle img-responsive dropdown-img" />
+                        </p>
+                      </div>
+                      <div class="col-md-9 pleft-0">
+                        <div class="row">
+                          <div class="col-md-12 textRow">
+                            <div class="col-md-12" id="textRow">
+                              <p class="text-left drop-name">
+                                {{#if_equals user.name body.senderName}}
+                                <strong>{{body.receiverName}}</strong>
+                                {{else}}
+                                <strong>{{body.senderName}}</strong>
+                                {{/if_equals}}
+                              </p>
+                              {{body.content}}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </a>
+                  <hr class="dropdown-divider" />
+                  {{/each}}
+                {{/if_equals}}
+                </div>
+              </div>
+            </li>
+            
           </ul>
         </li>
 
@@ -78,6 +141,11 @@
             </li>
         {{/if}}
       </ul>
+
+      
+
+</ul>
+
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>

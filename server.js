@@ -11,6 +11,7 @@ const hbs = require('hbs');
 const expressHbs = require('express-handlebars');
 const passportSocketIo = require("passport.socketio");
 
+
 const config = require('./config/secret');
 const sessionStore = new MongoStore({ url: config.database, autoReconnect: true });
 
@@ -21,8 +22,8 @@ const io = require('socket.io')(http);
 const sessionMiddleware = session({
   resave: true,
   saveUninitialized: true,
-  secret: config.secret,
-  store: new MongoStore({ url: config.database, autoReconnect: true })
+  secret: config.secret || process.env.SECRET,
+  store: new MongoStore({ url: config.database || process.env.DATABASE, autoReconnect: true })
 }); 
 
 
@@ -46,10 +47,11 @@ app.use(function(req, res, next) {
   next();
 });
 
+
 io.use(passportSocketIo.authorize({
   cookieParser: cookieParser,       // the same middleware you registrer in express
   key:          'connect.sid',       // the name of the cookie where express/connect stores its session_id
-  secret:       config.secret,    // the session_secret to parse the cookie
+  secret: config.secret || process.env.SECRET,    // the session_secret to parse the cookie
   store:        sessionStore,        // we NEED to use a sessionstore. no memorystore please
   success:      onAuthorizeSuccess,  // *optional* callback on success - read more below
   fail:         onAuthorizeFail,     // *optional* callback on fail/error - read more below
@@ -71,6 +73,7 @@ function onAuthorizeFail(data, message, error, accept){
 }
 
 require('./realtime/io')(io);
+require('./realtime/io-inbox')(io);
 
 const mainRoutes = require('./routes/main');
 const userRoutes = require('./routes/user');
@@ -80,7 +83,7 @@ app.use(mainRoutes);
 app.use(userRoutes);
 app.use(orderRoutes);
 
-http.listen(config.port, (err) => {
+http.listen(config.port || process.env.PORT, (err) => {
   if (err) console.log(err);
   console.log(`Running on port ${config.port}`);
 });
